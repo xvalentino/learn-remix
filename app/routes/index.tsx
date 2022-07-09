@@ -5,8 +5,9 @@ import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 
 import { db } from "~/utils/db.server";
+import type { Todo } from "@prisma/client";
 
-type Loaded = { todos?: { name: string }[] };
+type Loaded = { todos?: Todo[] };
 
 export const loader: LoaderFunction = async () =>
   json({ todos: await db.todo.findMany() });
@@ -39,8 +40,13 @@ export default function Index() {
         <button>Add</button>
       </Form>
       <ul>
-        {todos?.map((todo: { name: string }) => (
-          <div key={todo.name}>{todo.name}</div>
+        {todos?.map(({ name, id }) => (
+          <div key={id}>
+            {name}
+            <Form action={`/todos/${id}`} method="post">
+              <button>🧨</button>
+            </Form>
+          </div>
         ))}
       </ul>
     </div>
